@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- List View -->
+    <record id="view_field_access_config_tree" model="ir.ui.view">
+        <field name="name">field.access.config.list</field>
+        <field name="model">field.access.config</field>
+        <field name="arch" type="xml">
+            <list string="Field Access Configurations">
+                <field name="name"/>
+                <field name="model_id"/>
+                <field name="apply_to"/>
+                <field name="check_usage" optional="show"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form View -->
+    <record id="view_field_access_config_form" model="ir.ui.view">
+        <field name="name">field.access.config.form</field>
+        <field name="model">field.access.config</field>
+        <field name="arch" type="xml">
+            <form string="Field Access Configuration">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger"
+                                invisible="active"/>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="name" placeholder="e.g., Prevent Product Updates"/>
+                            <field name="model_id" options="{'no_create': True}"/>
+                            <field name="model_name" invisible="1"/>
+                            <field name="active" widget="boolean_toggle"/>
+                        </group>
+                        <group>
+                            <field name="apply_to"/>
+                            <field name="user_ids" widget="many2many_tags"
+                                   invisible="apply_to != 'users'"/>
+                            <field name="group_ids" widget="many2many_tags"
+                                   invisible="apply_to != 'groups'"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <group string="General Restrictions">
+                            <field name="prevent_write"/>
+                            <field name="prevent_delete"/>
+                        </group>
+                        <group string="Usage Checking">
+                            <field name="check_usage"/>
+                            <label for="check_usage" string=" "/>
+                            <div invisible="not check_usage">
+                                <span class="text-muted">
+                                    When enabled, prevents updates/deletes if the record is being used in specified
+                                    models below.
+                                </span>
+                            </div>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Field Configurations" name="fields">
+                            <field name="field_line_ids">
+                                <list editable="bottom">
+                                    <field name="field_id"
+                                           domain="[('model_id', '=', parent.model_id)]"
+                                           context="{'default_model_id': parent.model_id}"
+                                           options="{'no_create': True}"/>
+                                    <field name="field_description"/>
+                                    <!--                                    <field name="access_type"/>-->
+                                </list>
+                            </field>
+                        </page>
+
+                        <page string="Usage Models" name="usage_models" invisible="not check_usage">
+                            <div class="alert alert-info mb-3" role="alert">
+                                <strong>Usage Models:</strong> Define which models use this target model.
+                                For example, if target model is "Product", you can add "Sales Order Line"
+                                to prevent product updates/deletes when used in sales orders.
+                            </div>
+                            <field name="usage_model_ids">
+                                <list editable="bottom">
+                                    <field name="usage_model_id"
+                                           placeholder="e.g., Sales Order Line" options="{'no_create': True}"/>
+                                    <field name="relation_field_id"
+                                           domain="[('model_id', '=', usage_model_id)]"
+                                           placeholder="e.g., product_id"/>
+                                    <field name="prevent_update_if_used"/>
+                                    <field name="prevent_delete_if_used"/>
+                                    <field name="prevent_duplicate_if_used"/>
+                                </list>
+                            </field>
+                        </page>
+
+                        <page string="Help" name="help">
+                            <group>
+                                <div class="alert alert-info" role="alert">
+                                    <h4>Configuration Guide</h4>
+                                    <ul>
+                                        <li><strong>Target Model:</strong> The model you want to protect (e.g.,
+                                            product.template, product.category)</li>
+                                        <li><strong>Apply To:</strong> Choose who this restriction applies to</li>
+                                        <li><strong>Prevent All Updates:</strong> Block all modifications to
+                                            records</li>
+                                        <li><strong>Prevent Delete:</strong> Block deletion of records</li>
+                                        <li><strong>Field Configurations:</strong> Set specific fields as readonly or
+                                            hidden</li>
+                                        <li><strong>Check Usage:</strong> Enable to prevent updates/deletes when record
+                                            is used in other models</li>
+                                        <li><strong>Usage Models:</strong> Define which models use the target model
+                                            <ul>
+                                                <li><em>Usage Model:</em> Model that contains the target (e.g.,
+                                                    sale.order.line)</li>
+                                                <li><em>Relation Field:</em> Field that links to target model (e.g.,
+                                                    product_id)</li>
+                                                <li><em>Prevent Update if Used:</em> Block updates if record exists in
+                                                    usage model</li>
+                                                <li><em>Prevent Delete if Used:</em> Block deletion if record exists in
+                                                    usage model</li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                    <h5>Example Configuration:</h5>
+                                    <p>
+                                        <strong>Target:</strong> Product Template<br/>
+                                        <strong>Usage Models:</strong><br/>
+                                        - Sales Order Line (product_id)<br/>
+                                        - Purchase Order Line (product_id)<br/>
+                                        Result: Cannot update/delete products that are in sales or purchase orders.
+                                    </p>
+                                    <p><strong>Note:</strong> System administrators are always exempt from these
+                                        restrictions.</p>
+                                </div>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search View -->
+    <record id="view_field_access_config_search" model="ir.ui.view">
+        <field name="name">field.access.config.search</field>
+        <field name="model">field.access.config</field>
+        <field name="arch" type="xml">
+            <search string="Field Access Configurations">
+                <field name="name"/>
+                <field name="model_id"/>
+                <filter string="Active" name="active" domain="[('active', '=', True)]"/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <filter string="With Usage Check" name="check_usage" domain="[('check_usage', '=', True)]"/>
+                <group expand="0" string="Group By">
+                    <filter string="Model" name="group_model" context="{'group_by': 'model_id'}"/>
+                    <filter string="Apply To" name="group_apply_to" context="{'group_by': 'apply_to'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action -->
+    <record id="action_field_access_config" model="ir.actions.act_window">
+        <field name="name">Field Access Control</field>
+        <field name="res_model">field.access.config</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Field Access Configuration
+            </p>
+            <p>
+                Configure field access control and prevent updates/deletes on records used in other models.
+            </p>
+        </field>
+    </record>
+
+</odoo>
