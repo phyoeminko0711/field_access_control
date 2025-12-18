@@ -11,8 +11,9 @@
         - Prevent updates on product and product category
         - Flexible configuration through UI
     """,
-    'author': 'dev-pmk',
-    'depends': ['base', 'product', 'sale_management', 'purchase'],
+    'author': 'Innovix Company',
+    'website': 'https://www.innovix-solutions.com',
+    'depends': ['base', 'product', 'sale_management', 'purchase', 'innovix_material_requisition'],
     'data': [
         'security/ir.model.access.csv',
         'views/field_access_config_views.xml',

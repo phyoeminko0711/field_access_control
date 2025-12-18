@@ -38,19 +38,11 @@ class BaseModel(models.AbstractModel):
                         'You are not allowed to modify the field "%s" in "%s".'
                     ) % (line.field_description or line.field_name, self._description))
 
-            # Check usage restriction - NEW: Only check if updating restricted fields
+            # Check usage restriction
             if config.check_usage and config.usage_model_ids:
-                # Get list of restricted field names from configuration lines
-                restricted_fields = set(config.field_line_ids.mapped('field_name'))
-
-                # Check if any of the fields being updated are in the restricted list
-                updated_restricted_fields = set(vals.keys()) & restricted_fields
-
-                # Only check usage if we're updating at least one restricted field
-                if updated_restricted_fields:
-                    for usage in config.usage_model_ids:
-                        if usage.prevent_update_if_used:
-                            self._check_record_usage(usage, 'update', updated_restricted_fields)
+                for usage in config.usage_model_ids:
+                    if usage.prevent_update_if_used:
+                        self._check_record_usage(usage, 'update')
 
         return super().write(vals)
 
@@ -137,6 +129,7 @@ class BaseModel(models.AbstractModel):
         # Special case for product templates → product variants
         if self._name == 'product.template' and field_obj.comodel_name == 'product.product':
             variants = self.env['product.product'].sudo().search([('product_tmpl_id', 'in', self.ids)])
+            field_name = usage_config.relation_field_name
             target_ids = variants.ids
             if not target_ids:
                 return
@@ -144,7 +137,6 @@ class BaseModel(models.AbstractModel):
         # Count usage
         domain = [(field_name, 'in', target_ids)]
         usage_count = usage_model.sudo().search_count(domain)
-
         if usage_count > 0:
             # Safe access to usage model name
             try:
