@@ -1,26 +1,38 @@
 {
-    'name': 'Dynamic Field Access Control',
-    'version': '18.0.1.0.0',
-    'category': 'Tools',
-    'summary': 'Prevent updates and control field visibility dynamically',
-    'description': """
-        Dynamic Field Access Control
-        =============================
-        - Configure field-level access control per model
-        - Set fields as readonly or hidden for specific users/groups
-        - Prevent updates on product and product category
-        - Flexible configuration through UI
-    """,
-    'author': 'Innovix Company',
-    'website': 'https://www.innovix-solutions.com',
-    'depends': ['base', 'product', 'sale_management', 'purchase', 'innovix_material_requisition'],
-    'data': [
-        'security/ir.model.access.csv',
-        'views/field_access_config_views.xml',
-        'views/menu_views.xml',
+    "name": "Dynamic Field Access Control",
+    "version": "18.0.1.0.0",
+    "category": "Technical",
+    "summary": "Dynamic field-level readonly and visibility access control",
+    "description": """
+Dynamic Field Access Control
+============================
+
+This module allows administrators to configure dynamic
+field-level access control for any model.
+
+Key Features:
+-------------
+- Configure field-level access rules per model
+- Set fields as readonly or invisible dynamically
+- Apply rules per user or user group
+- Control write access on selected business objects
+- Fully configurable through user interface
+""",
+    "author": "Phyoe Min Ko",
+    "license": "LGPL-3",
+    "depends": [
+        "base",
+        "product",
+        "sale_management",
+        "purchase",
     ],
-    'installable': True,
-    'application': False,
-    'auto_install': False,
-    'license': 'LGPL-3',
+    "data": [
+        "security/ir.model.access.csv",
+        "views/field_access_config_views.xml",
+        "views/menu_views.xml",
+    ],
+    "images": ["static/description/icon.png"],
+    "installable": True,
+    "application": False,
+    "auto_install": False,
 }
