@@ -1,7 +1,0 @@
-id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_field_access_config_admin,field.access.config.admin,model_field_access_config,base.group_system,1,1,1,1
-access_field_access_config_line_admin,field.access.config.line.admin,model_field_access_config_line,base.group_system,1,1,1,1
-access_field_access_usage_admin,field.access.config.usage.admin,model_field_access_config_usage,base.group_system,1,1,1,1
-access_field_access_config_user,field.access.config.user,model_field_access_config,base.group_user,1,0,0,0
-access_field_access_config_line_user,field.access.config.line.user,model_field_access_config_line,base.group_user,1,0,0,0
-access_field_access_usage_user,field.access.config.usage.user,model_field_access_config_usage,base.group_user,1,0,0,0
